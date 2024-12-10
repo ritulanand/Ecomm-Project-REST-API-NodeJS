@@ -1,0 +1,6 @@
+Products
+Get Products
+Add a product
+Get one product
+Rate product
+Filter product
