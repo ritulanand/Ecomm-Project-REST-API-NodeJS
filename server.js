@@ -2,9 +2,11 @@
 
 import express from "express";
 import productRouter from "./src/features/product/product.routes.js";
+import bodyParser from "body-parser";
 //2 create server
 
 const server = express();
+server.use(bodyParser.json()); // application level middleware added for every req body
 
 //for all requests related to product , redirect to product routes
 server.use("/api/products", productRouter);
