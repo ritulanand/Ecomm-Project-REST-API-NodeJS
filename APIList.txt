@@ -4,3 +4,21 @@ Add a product
 Get one product
 Rate product
 Filter product
+
+Usercontroller
+SignUp - Email, Name, Password, TypeOfUser(customer, seller)
+SignIn - (Email, Password)
+
+Folder structure
+Route configuration
+creating Apis
+different API methods
+Middlewares
+Route parameters
+Query parameters
+testing API using postman
+securing api using jwt token
+documentation API using swagger
+CORS
+logging
+Error handling

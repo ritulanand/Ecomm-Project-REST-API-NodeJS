@@ -1,3 +1,6 @@
+import { ApplicationError } from "../../error-handler/applicationError.js";
+import UserModel from "../user/user.model.js";
+
 export default class ProductModel {
   constructor(id, name, desc, price, imageUrl, category, sizes) {
     this.id = id;
@@ -23,6 +26,63 @@ export default class ProductModel {
 
   static GetAll() {
     return products;
+  }
+
+  static filter(minPrice, maxPrice, category) {
+    const result = products.filter((product) => {
+      return (
+        // if only maxprice is there then only check condition
+        (!minPrice || product.price >= minPrice) &&
+        (!maxPrice || product.price <= maxPrice) &&
+        (!category || product.category == category)
+
+        // product.price >= minPrice &&
+        // product.price <= maxPrice &&
+        // product.category == category
+      );
+    });
+    return result;
+  }
+
+  static rateProduct(userID, productID, rating) {
+    // 1. validate user and product
+    const user = UserModel.getAll().find((u) => u.id == userID);
+    if (!user) {
+      // user-defined error
+      throw new ApplicationError("User not found", 404);
+    }
+    //validate product
+    const product = products.find((p) => p.id == productID);
+    if (!product) {
+      throw new ApplicationError("Product not found", 400);
+    }
+
+    // const product = products.find((p) => p.id == productID);
+
+    //2. check if there are ragtings and if not add ratings array
+    if (!product.ratings) {
+      product.ratings = [];
+      product.ratings.push({
+        userID: userID,
+        rating: rating,
+      });
+    } else {
+      const existingRatingIndex = product.ratings.findIndex(
+        (r) => r.userID == userID
+      );
+      if (existingRatingIndex >= 0) {
+        product.ratings[existingRatingIndex] = {
+          userID: userID,
+          rating: rating,
+        };
+      } else {
+        //ifno existingrating thena add new rating
+        product.ratings.push({
+          userID: userID,
+          rating: rating,
+        });
+      }
+    }
   }
 }
 

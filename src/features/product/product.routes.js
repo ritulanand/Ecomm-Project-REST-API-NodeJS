@@ -8,8 +8,14 @@ import { upload } from "../../middlewares/fileupload.middlware.js";
 const productRouter = express.Router();
 const productController = new ProductController();
 
+productRouter.post("/rate", productController.rateProduct);
+
 // all the paths to contoller methods
 //localhost/api/products
+
+//localhost:3400/api/products/filter?minPrice=10&maxPrice=20&category=Category1
+productRouter.get("/filter", productController.filterProducts);
+
 productRouter.get("/", productController.getAllProducts);
 productRouter.post(
   "/",
