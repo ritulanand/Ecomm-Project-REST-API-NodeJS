@@ -2,14 +2,14 @@ import { ApplicationError } from "../../error-handler/applicationError.js";
 import UserModel from "../user/user.model.js";
 
 export default class ProductModel {
-  constructor(id, name, desc, price, imageUrl, category, sizes) {
-    this.id = id;
+  constructor(name, desc, price, imageUrl, category, sizes, id) {
     this.name = name;
     this.desc = desc;
     this.imageUrl = imageUrl;
     this.category = category;
     this.price = price;
     this.sizes = sizes;
+    this._id = id;
   }
 
   static add(product) {
@@ -26,22 +26,6 @@ export default class ProductModel {
 
   static GetAll() {
     return products;
-  }
-
-  static filter(minPrice, maxPrice, category) {
-    const result = products.filter((product) => {
-      return (
-        // if only maxprice is there then only check condition
-        (!minPrice || product.price >= minPrice) &&
-        (!maxPrice || product.price <= maxPrice) &&
-        (!category || product.category == category)
-
-        // product.price >= minPrice &&
-        // product.price <= maxPrice &&
-        // product.category == category
-      );
-    });
-    return result;
   }
 
   static rateProduct(userID, productID, rating) {

@@ -12,6 +12,17 @@ const fsPromise = fs.promises;
 //   }
 // }
 
+async function log(logData) {
+  try {
+    logData = ` \n  ${new Date().toString()} \n ${logData} \n `;
+    await fsPromise.appendFile("logs.txt", logData);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export { log };
+
 const logger = winston.createLogger({
   level: "info",
   format: winston.format.json(),

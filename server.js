@@ -1,8 +1,9 @@
 //1 import exprerss
-
+import "./env.js";
 import express from "express";
 import swagger from "swagger-ui-express";
 import cors from "cors";
+
 import productRouter from "./src/features/product/product.routes.js";
 import bodyParser from "body-parser";
 import userRouter from "./src/features/user/user.routes.js";
@@ -13,6 +14,7 @@ import cartRouter from "./src/features/cartItems/cartItems.routes.js";
 import apiDocs from "./swagger.json" assert { type: "json" };
 import loggerMiddleware from "./src/middlewares/logger.middleware.js";
 import { ApplicationError } from "./src/error-handler/applicationError.js";
+import { connectToMongoDB } from "./src/config/mongodb.js";
 //2 create server
 
 const server = express();
@@ -80,4 +82,5 @@ server.use((req, res) => {
 //5 specify port
 server.listen(3400, () => {
   console.log("Server is running at 3400");
+  connectToMongoDB();
 });
