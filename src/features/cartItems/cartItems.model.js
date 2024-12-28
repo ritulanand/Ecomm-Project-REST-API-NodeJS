@@ -8,19 +8,19 @@ export default class CartItemModel {
     this.id = id;
   }
 
-  static add(productID, userID, quantity) {
-    const cartItem = new CartItemModel(productID, userID, quantity);
-    cartItem.id = cartItems.length + 1;
-    cartItems.push(cartItem);
-    console.log("cart items", cartItems);
-    console.log("cart item", cartItem);
-    return cartItem;
-  }
+  // static add(productID, userID, quantity) {
+  //   const cartItem = new CartItemModel(productID, userID, quantity);
+  //   cartItem.id = cartItems.length + 1;
+  //   cartItems.push(cartItem);
+  //   console.log("cart items", cartItems);
+  //   console.log("cart item", cartItem);
+  //   return cartItem;
+  // }
 
-  static get(userID) {
-    console.log("id", userID);
-    return cartItems.filter((i) => i.userID == userID);
-  }
+  // static get(userID) {
+  //   console.log("id", userID);
+  //   return cartItems.filter((i) => i.userID == userID);
+  // }
 
   static delete(cartItemID, userID) {
     const cartItemIndex = cartItems.findIndex(

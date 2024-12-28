@@ -70,12 +70,55 @@ class ProductRepository {
       throw new ApplicationError("something went wrong with database", 500);
     }
   }
-  
+
+  //   async rate(userID, productID, rating) {
+  //     try {
+  //       const db = getDB();
+  //       const collection = db.collection(this.collection);
+  //       //1 find the product
+  //       const product = await collection.findOne({
+  //         _id: new ObjectId(productID),
+  //       });
+  //       console.log("prod", product);
+  //       //2. find the rating
+  //       const userRating = product?.ratings?.find((r) => r.userID == userID);
+  //       console.log("user", userRating);
+  //       if (userRating) {
+  //         // 3. update the  rating
+  //         await collection.updateOne(
+  //           {
+  //             _id: new ObjectId(productID),
+  //             "ratings.userID": new ObjectId(userID),
+  //           },
+  //           { $set: { "ratings.$.rating": rating } }
+  //         );
+  //       } else {
+  //         await collection.updateOne(
+  //           { _id: new ObjectId(productID) },
+  //           { $push: { ratings: { userID: new ObjectId(userID), rating } } }
+  //         );
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new ApplicationError("something went wrong with database", 500);
+  //     }
+  //   }
+
   async rate(userID, productID, rating) {
     try {
       const db = getDB();
       const collection = db.collection(this.collection);
-      return await collection.updateOne(
+      // remove exsiting entries
+      await collection.updateOne(
+        {
+          _id: new ObjectId(productID),
+        },
+        {
+          $pull: { ratings: { userID: new ObjectId(userID) } },
+        }
+      );
+      //add new entries
+      await collection.updateOne(
         { _id: new ObjectId(productID) },
         { $push: { ratings: { userID: new ObjectId(userID), rating } } }
       );

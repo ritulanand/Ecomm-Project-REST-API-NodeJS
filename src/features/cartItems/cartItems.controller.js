@@ -1,28 +1,44 @@
 import CartItemModel from "./cartItems.model.js";
+import CartItemsRepository from "./cartItems.repository.js";
 
 export class CartItemsController {
-  add(req, res) {
-    const { productID, quantity } = req.query;
-    // const quantity = Number(req.quantity);
-    const userId = req.userID;
+  constructor() {
+    this.cartItemsRepository = new CartItemsRepository();
+  }
+  async add(req, res) {
+    try {
+      const { productID, quantity } = req.body;
+      // const quantity = Number(req.quantity);
+      const userId = req.userID;
 
-    console.log("cart req", req.query);
-    CartItemModel.add(productID, userId, quantity);
-    res.status(201).send("Cart is updated");
+      console.log("cart req", req.body);
+      await this.cartItemsRepository.add(productID, userId, quantity);
+      res.status(201).send("Cart is updated");
+    } catch (err) {
+      console.log(err);
+      return res.status(404).send("something went wrong");
+    }
   }
 
-  get(req, res) {
-    const userID = req.userID;
-    const items = CartItemModel.get(userID);
-    return res.status(200).send(items);
+  async get(req, res) {
+    try {
+      const userID = req.userID;
+      console.log("user", userID);
+      const items = await this.cartItemsRepository.get(userID);
+      console.log("items", items);
+      return res.status(200).send(items);
+    } catch (err) {
+      console.log(err);
+      return res.status(404).send("something went wrong");
+    }
   }
-  delete(req, res) {
+  async delete(req, res) {
     const userID = req.userID;
     const cartItemID = req.params.id;
-    const error = CartItemModel.delete(cartItemID, userID);
-    console.log("deleet eror", error);
-    if (error) {
-      return res.status(404).send(error);
+    const isDeleted = await this.cartItemsRepository.delete(userID, cartItemID);
+    console.log(" isDeleted", isDeleted);
+    if (!isDeleted) {
+      return res.status(404).send("item not found");
     }
     return res.status(200).send("cart item is removed");
   }
