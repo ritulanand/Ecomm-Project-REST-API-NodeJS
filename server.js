@@ -15,6 +15,7 @@ import apiDocs from "./swagger.json" assert { type: "json" };
 import loggerMiddleware from "./src/middlewares/logger.middleware.js";
 import { ApplicationError } from "./src/error-handler/applicationError.js";
 import { connectToMongoDB } from "./src/config/mongodb.js";
+import orderRouter from "./src/features/order/order.routes.js";
 //2 create server
 
 const server = express();
@@ -45,6 +46,8 @@ server.use(bodyParser.json()); // application level middleware added for every r
 server.use("/api-docs", swagger.serve, swagger.setup(apiDocs));
 
 server.use(loggerMiddleware);
+
+server.use("/api/orders", jwtAuth, orderRouter);
 
 //for all requests related to product , redirect to product routes
 server.use("/api/products", jwtAuth, productRouter);
