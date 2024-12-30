@@ -21,13 +21,13 @@ export default class ProductController {
     // console.log("this is post request");
     // res.status(200).send("post request received");
     try {
-      const { name, price, sizes } = req.body;
+      const { name, desc, category, price, sizes } = req.body;
       const newProduct = new ProductModel(
         name,
-        null,
+        desc,
         parseFloat(price),
         req.file.filename,
-        null,
+        category,
         sizes.split(",")
       );
 
@@ -73,14 +73,21 @@ export default class ProductController {
     try {
       const minPrice = req.query.minPrice;
       const maxPrice = req.query.maxPrice;
-      const category = req.query.category;
+      const categories = req.query.categories;
       console.log("req qury", req.query);
 
-      const result = await this.productRepository.filter(
-        minPrice,
-        maxPrice,
-        category
-      );
+      const result = await this.productRepository.filter(minPrice, categories);
+      res.status(200).send(result);
+    } catch (err) {
+      console.log(err);
+      return res.status(404).send("something went wrong");
+    }
+  }
+
+  async averagePrice(req, res, next) {
+    try {
+      const result =
+        await this.productRepository.averageProductPricePerCategory();
       res.status(200).send(result);
     } catch (err) {
       console.log(err);

@@ -9,7 +9,7 @@ export default class CartItemsRepository {
   async add(productID, userId, quantity) {
     try {
       // 1. get the db
-      const db = getDB();
+      const db = getDB();   
       //get the collection
       const collection = db.collection(this.collection);
       const id = await this.getNextCounter(db);

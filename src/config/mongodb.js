@@ -14,6 +14,10 @@ export const connectToMongoDB = () => {
     });
 };
 
+export const getClient = () => {
+  return client;
+};
+
 export const getDB = () => {
   return client.db();
 };
@@ -38,3 +42,4 @@ const createIndexes = async (db) => {
   }
   console.log("indexes are created");
 };
+

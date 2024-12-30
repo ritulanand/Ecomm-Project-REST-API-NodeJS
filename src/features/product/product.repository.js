@@ -19,6 +19,7 @@ class ProductRepository {
       throw new ApplicationError("something went wrong with database", 500);
     }
   }
+
   async getAll() {
     try {
       const db = getDB();
@@ -43,28 +44,38 @@ class ProductRepository {
     }
   }
 
-  async filter(minPrice, maxPrice, category) {
+  //product should have min price specified and category
+  async filter(minPrice, categories) {
     try {
       const db = getDB();
       const collection = db.collection(this.collection);
       let filterExpression = {};
-      console.log("filet", minPrice, maxPrice, category);
+      //   console.log("filet", minPrice, maxPrice, category);
       if (minPrice) {
         console.log("min");
         filterExpression.price = { $gte: parseFloat(minPrice) };
       }
-      if (maxPrice) {
-        console.log("min");
-        filterExpression.price = {
-          ...filterExpression.price,
-          $lte: parseFloat(maxPrice),
+      //['Cat1', 'Cat2']
+      console.log("catgeories before", categories);
+      //   categories = categories.replace(/"/g, "o");
+      //   console.log("cat", categories);
+      categories = categories.replace(/'/g, '"');
+      console.log("cat repla", categories);
+      categories = JSON.parse(categories);
+      console.log("catgeories", categories);
+
+      if (categories) {
+        filterExpression = {
+          //   $and: [{ category: category }, filterExpression],
+          $or: [{ category: { $in: categories } }, filterExpression],
         };
-      }
-      if (category) {
-        filterExpression.category = category;
+        // filterExpression.category = category;
       }
       console.log("filteresd express", filterExpression);
-      return collection.find(filterExpression).toArray();
+      return collection
+        .find(filterExpression)
+        .project({ name: 1, price: 1, _id: 0, ratings: { $slice: -1 } })
+        .toArray();
     } catch (err) {
       console.log(err);
       throw new ApplicationError("something went wrong with database", 500);
@@ -122,6 +133,27 @@ class ProductRepository {
         { _id: new ObjectId(productID) },
         { $push: { ratings: { userID: new ObjectId(userID), rating } } }
       );
+    } catch (err) {
+      console.log(err);
+      throw new ApplicationError("something went wrong with database", 500);
+    }
+  }
+
+  async averageProductPricePerCategory() {
+    try {
+      const db = getDB();
+      return await db
+        .collection(this.collection)
+        .aggregate([
+          {
+            //stage1: get average price per category
+            $group: {
+              _id: "$category",
+              averagePrice: { $avg: "$price" },
+            },
+          },
+        ])
+        .toArray();
     } catch (err) {
       console.log(err);
       throw new ApplicationError("something went wrong with database", 500);

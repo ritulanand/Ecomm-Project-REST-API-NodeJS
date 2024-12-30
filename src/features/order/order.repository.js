@@ -53,14 +53,18 @@ export default class OrderRepository {
       await db
         .collection("cartItems")
         .deleteMany({ userId: new ObjectId(userId) }, {session});
-        session.commitTransaction();
-        session.endSession();
+        await session.commitTransaction();
+        // session.endSession();
+
       return;
     } catch (err) {
       await session.abortTransaction();
-      session.endSession();
-      console.log(err);
+      // session.endSession();
+      console.log("err during transaction", err);
       throw new ApplicationError("something went wrong with database", 500);
+    }
+    finally{
+      session.endSession();
     }
   }
 
