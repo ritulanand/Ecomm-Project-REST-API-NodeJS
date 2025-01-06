@@ -21,14 +21,14 @@ export default class ProductController {
     // console.log("this is post request");
     // res.status(200).send("post request received");
     try {
-      const { name, desc, category, price, sizes } = req.body;
+      const { name, price, sizes, categories , description} = req.body;
       const newProduct = new ProductModel(
         name,
-        desc,
+        description,
         parseFloat(price),
-        req.file.filename,
-        category,
-        sizes.split(",")
+        req?.file?.filename,
+        categories,
+        sizes?.split(",")
       );
 
       const createdProduct = await this.productRepository.add(newProduct);
@@ -52,7 +52,7 @@ export default class ProductController {
         rating
       );
       console.log("res rate", resrate);
-
+      
       return res.status(200).send("rating has been added");
     } catch (err) {
       console.log("err0", err);

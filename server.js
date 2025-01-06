@@ -18,6 +18,7 @@ import { connectToMongoDB } from "./src/config/mongodb.js";
 import orderRouter from "./src/features/order/order.routes.js";
 import { connectUsingMongoose } from "./src/config/mongooseConfig.js";
 import mongoose, { mongo } from "mongoose";
+import likeRouter from "./src/features/like/like.router.js";
 //2 create server
 
 const server = express();
@@ -54,6 +55,7 @@ server.use("/api/orders", jwtAuth, orderRouter);
 //for all requests related to product , redirect to product routes
 server.use("/api/products", jwtAuth, productRouter);
 server.use("/api/users", userRouter);
+server.use("/api/likes", jwtAuth, likeRouter);
 
 server.use("/api/cartItems", loggerMiddleware, jwtAuth, cartRouter);
 

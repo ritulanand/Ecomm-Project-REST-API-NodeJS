@@ -4,22 +4,41 @@ import { ApplicationError } from "../../error-handler/applicationError.js";
 import mongoose from "mongoose";
 import { productSchema } from "./product.schema.js";
 import { reviewSchema } from "./review.schema.js";
+import { categorySchema } from "./category.schema.js";
 
 const ProductModel = mongoose.model("Product", productSchema);
 const ReviewModel = mongoose.model("Review", reviewSchema);
+const CategoryModel = mongoose.model("Category", categorySchema);
 
 class ProductRepository {
   constructor() {
     this.collection = "products";
   }
-  async add(newProduct) {
+  async add(productData) {
     try {
-      // 1. get the db
-      const db = getDB();
-      //get the collection
-      const collection = db.collection(this.collection);
-      await collection.insertOne(newProduct);
-      return newProduct;
+      // // 1. get the db
+      // const db = getDB();
+      // //get the collection
+      // const collection = db.collection(this.collection);
+      // await collection.insertOne(newProduct);
+      // return newProduct;
+
+
+      //1. add the product
+      console.log("productData before", productData);
+      productData.categories = productData.category.split(',').map(e => e.trim());
+      console.log("productData after", productData);
+      const newProduct = new ProductModel(productData);
+      console.log("newproduct", newProduct);
+      const savedProduct = await newProduct.save();
+
+
+      //2. update the categories
+      await CategoryModel.updateMany({
+        _id : {$in : productData.categories}
+      },{$push : {products : new ObjectId(savedProduct._id)}})
+
+
     } catch (err) {
       console.log(err);
       throw new ApplicationError("something went wrong with database", 500);
@@ -147,6 +166,10 @@ class ProductRepository {
 
   async rate(userID, productID, rating) {
     try {
+
+      if (!ObjectId.isValid(productID)) {
+        throw new Error("Invalid Product ID");
+    }
       // check if product exists
       const productToUpdate = await ProductModel.findById(productID);
       console.log("producttouppdate", productToUpdate);
@@ -157,6 +180,7 @@ class ProductRepository {
       // 2. get the existing reviews
       const userReview = await ReviewModel.findOne({
         product: new ObjectId(productID),
+
         user: new ObjectId(userID),
       });
       console.log("user frevie", userReview);
@@ -172,7 +196,7 @@ class ProductRepository {
         newReview.save();
       }
     } catch (err) {
-      console.log(err);
+      console.log("err >>", err);
       throw new ApplicationError("something went wrong with database", 500);
     }
   }
