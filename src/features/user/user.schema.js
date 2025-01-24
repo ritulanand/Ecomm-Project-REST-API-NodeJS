@@ -5,14 +5,8 @@ export const userSchema = new mongoose.Schema({
   email: { type: String, unique: true,required: true, match: [/.+\@.+\../, "Please enter a valid email"]},
   password: {
     type: String,
-    validate : {
-        validator : function(value){
-            let c =  /^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$/.test(value);
-          console.log("c", c);
-          return c
-        },
-        message : "Password should be between 8-12 characters and have a special charater"
-    }
+    required : true
   },
   type: { type: String, enum: ["Customer", "Seller"] },
 });
+
